@@ -437,7 +437,6 @@ public class FlagsDataStore {
         } catch (IOException ignored) {}
 
         defaults.clear();
-        System.gc();
     }
 
     private void addDefault(HashMap<String, CustomizableMessage> defaults, Messages id, String text, String notes) {
