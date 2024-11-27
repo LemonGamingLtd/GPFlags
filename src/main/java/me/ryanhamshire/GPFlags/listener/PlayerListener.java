@@ -37,30 +37,30 @@ public class PlayerListener implements Listener, Runnable {
     private final ConcurrentMap<UUID, Location> lastLocation = new ConcurrentHashMap<>();
 
     public PlayerListener() {
-        //GPFlags.getScheduler().getImpl().runTimer(this, TASK_PERIOD_MILLISECONDS, TASK_PERIOD_MILLISECONDS, TimeUnit.MILLISECONDS);
+        GPFlags.getScheduler().getImpl().runTimer(this, TASK_PERIOD_MILLISECONDS, TASK_PERIOD_MILLISECONDS, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void run() {
-        //for (final Player player : Bukkit.getOnlinePlayers()) {
-        //    final UUID playerId = player.getUniqueId();
-        //    final Location location = player.getLocation();
-        //    final Location lastLocation = this.lastLocation.get(playerId);
-        //    this.lastLocation.put(playerId, location);
-        //    if (lastLocation == null) {
-        //        return;
-        //    }
-        //    if (location.getWorld().equals(lastLocation.getWorld()) &&
-        //        location.distanceSquared(lastLocation) <= DISTANCE_THRESHOLD_SQUARED) {
-        //        return;
-        //    }
-        //    GPFlags.getScheduler().getImpl().runAtEntity(player, () -> {
-        //        if (processMovement(location, lastLocation, player, null)) {
-        //            return;
-        //        }
-        //        player.teleportAsync(lastLocation);
-        //    });
-        //}
+        for (final Player player : Bukkit.getOnlinePlayers()) {
+            final UUID playerId = player.getUniqueId();
+            final Location location = player.getLocation();
+            final Location lastLocation = this.lastLocation.get(playerId);
+            this.lastLocation.put(playerId, location);
+            if (lastLocation == null) {
+                return;
+            }
+            if (location.getWorld().equals(lastLocation.getWorld()) &&
+                location.distanceSquared(lastLocation) <= DISTANCE_THRESHOLD_SQUARED) {
+                return;
+            }
+            GPFlags.getScheduler().getImpl().runAtEntity(player, () -> {
+                if (processMovement(location, lastLocation, player, null)) {
+                    return;
+                }
+                player.teleportAsync(lastLocation);
+            });
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
