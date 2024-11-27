@@ -12,16 +12,20 @@ import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class FlagDef_NoEnterPlayer extends PlayerMovementFlagDefinition {
+public class FlagDef_NoEnterPlayer extends PlayerMovementFlagDefinition implements Runnable {
+
+    private static final long TASK_PERIOD_SECONDS = 5L;
 
     public FlagDef_NoEnterPlayer(FlagManager manager, GPFlags plugin) {
         super(manager, plugin);
+//        GPFlags.getScheduler().getImpl().runTimer(this, TASK_PERIOD_SECONDS, TASK_PERIOD_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
@@ -76,6 +80,29 @@ public class FlagDef_NoEnterPlayer extends PlayerMovementFlagDefinition {
             if (nameOrUUID.equalsIgnoreCase(String.valueOf(p.getUniqueId()))) return false;
         }
         return true;
+    }
+
+    @Override
+    public void run() {
+        for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            GPFlags.getScheduler().getImpl().runAtEntity(onlinePlayer, () -> {
+                final Location location = onlinePlayer.getLocation();
+
+                final Flag flag = this.getFlagInstanceAtLocation(location, onlinePlayer);
+                if (flag == null) {
+                    return;
+                }
+
+                PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(onlinePlayer.getUniqueId());
+                Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, playerData.lastClaim);
+                if (isAllowed(onlinePlayer, claim, flag)) {
+                    return;
+                }
+
+                MessagingUtil.sendMessage(onlinePlayer, TextMode.Err, Messages.NoEnterPlayerMessage);
+                GriefPrevention.instance.ejectPlayer(onlinePlayer);
+            });
+        }
     }
 
     @Override

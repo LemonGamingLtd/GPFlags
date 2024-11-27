@@ -1,5 +1,6 @@
 package me.ryanhamshire.GPFlags.listener;
 
+import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.event.PlayerPostClaimBorderEvent;
 import me.ryanhamshire.GPFlags.event.PlayerPreClaimBorderEvent;
 import me.ryanhamshire.GPFlags.util.Util;
@@ -21,9 +22,46 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class PlayerListener implements Listener {
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+
+public class PlayerListener implements Listener, Runnable {
 
     private static final DataStore dataStore = GriefPrevention.instance.dataStore;
+
+    private static final long TASK_PERIOD_MILLISECONDS = 500L;
+    private static final int DISTANCE_THRESHOLD_SQUARED = (int) Math.pow(3, 2);
+
+    private final ConcurrentMap<UUID, Location> lastLocation = new ConcurrentHashMap<>();
+
+    public PlayerListener() {
+        //GPFlags.getScheduler().getImpl().runTimer(this, TASK_PERIOD_MILLISECONDS, TASK_PERIOD_MILLISECONDS, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void run() {
+        //for (final Player player : Bukkit.getOnlinePlayers()) {
+        //    final UUID playerId = player.getUniqueId();
+        //    final Location location = player.getLocation();
+        //    final Location lastLocation = this.lastLocation.get(playerId);
+        //    this.lastLocation.put(playerId, location);
+        //    if (lastLocation == null) {
+        //        return;
+        //    }
+        //    if (location.getWorld().equals(lastLocation.getWorld()) &&
+        //        location.distanceSquared(lastLocation) <= DISTANCE_THRESHOLD_SQUARED) {
+        //        return;
+        //    }
+        //    GPFlags.getScheduler().getImpl().runAtEntity(player, () -> {
+        //        if (processMovement(location, lastLocation, player, null)) {
+        //            return;
+        //        }
+        //        player.teleportAsync(lastLocation);
+        //    });
+        //}
+    }
 
     @EventHandler(ignoreCancelled = true)
     private void onMove(PlayerMoveEvent event) {
