@@ -19,6 +19,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_EnterTitle extends PlayerMovementFlagDefinition {
 
@@ -27,18 +28,12 @@ public class FlagDef_EnterTitle extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (claimTo == null) return;
-        Flag flagTo = plugin.getFlagManager().getEffectiveFlag(to, this.getName(), claimTo);
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
         if (flagTo == null) return;
-        Flag flagFrom = plugin.getFlagManager().getEffectiveFlag(lastLocation, this.getName(), claimFrom);
-        if (flagFrom == flagTo) return;
         // moving to different claim with the same params
         if (flagFrom != null && flagFrom.parameters.equals(flagTo.parameters)) return;
 
-        final PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
-        final String owner = playerData.lastClaim != null ? playerData.lastClaim.getOwnerName() : "N/A";
-
+        final String owner = claimTo != null ? claimTo.getOwnerName() : "N/A";
         final Title title = Title.title(
             Component.text("Entering Claim", NamedTextColor.GREEN),
             Component.text(String.format("Owned by: %s", owner), TextColor.color(204, 204, 204)),

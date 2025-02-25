@@ -10,20 +10,16 @@ import me.ryanhamshire.GPFlags.util.MessagingUtil;
 import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FlagDef_NoEnter extends PlayerMovementFlagDefinition implements Runnable {
-
-    private static final long TASK_PERIOD_SECONDS = 5L;
+public class FlagDef_NoEnter extends PlayerMovementFlagDefinition {
 
     public FlagDef_NoEnter(FlagManager manager, GPFlags plugin) {
         super(manager, plugin);
-//        GPFlags.getScheduler().getImpl().runTimer(this, TASK_PERIOD_SECONDS, TASK_PERIOD_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
@@ -60,28 +56,6 @@ public class FlagDef_NoEnter extends PlayerMovementFlagDefinition implements Run
         if (Util.canAccess(claim, player)) return true;
         if (player.hasPermission("gpflags.bypass.noenter")) return true;
         return false;
-    }
-
-    @Override
-    public void run() {
-        for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            GPFlags.getScheduler().getImpl().runAtEntity(onlinePlayer, () -> {
-                final Location location = onlinePlayer.getLocation();
-
-                final Flag flag = this.getFlagInstanceAtLocation(location, onlinePlayer);
-                if (flag == null) {
-                    return;
-                }
-
-                Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, playerData.lastClaim);
-                if (isAllowed(flag, claim, onlinePlayer)) {
-                    return;
-                }
-
-                MessagingUtil.sendMessage(onlinePlayer, TextMode.Err, Messages.NoEnterMessage);
-                GriefPrevention.instance.ejectPlayer(onlinePlayer);
-            });
-        }
     }
 
     @Override

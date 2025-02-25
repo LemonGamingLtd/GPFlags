@@ -7,8 +7,6 @@ import me.ryanhamshire.GPFlags.MessageSpecifier;
 import me.ryanhamshire.GPFlags.Messages;
 import me.ryanhamshire.GPFlags.SetFlagResult;
 import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -17,6 +15,7 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_ExitTitle extends PlayerMovementFlagDefinition {
 
@@ -25,18 +24,12 @@ public class FlagDef_ExitTitle extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (claimFrom == null) return;
-        Flag flagFrom = plugin.getFlagManager().getEffectiveFlag(lastLocation, this.getName(), claimFrom);
-        if (flagFrom == null) return;
-        Flag flagTo = plugin.getFlagManager().getEffectiveFlag(to, this.getName(), claimTo);
-        if (flagFrom == flagTo) return;
-        // moving to different claim with the same message
-        if (flagTo != null && flagTo.parameters.equals(flagFrom.parameters)) return;
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        if (flagTo == null) return;
+        // moving to different claim with the same params
+        if (flagFrom != null && flagFrom.parameters.equals(flagTo.parameters)) return;
 
-        final PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
-        final String owner = playerData.lastClaim != null ? playerData.lastClaim.getOwnerName() : "N/A";
-
+        final String owner = claimTo != null ? claimTo.getOwnerName() : "N/A";
         final Title title = Title.title(
             Component.text("Leaving Claim", NamedTextColor.RED),
             Component.text(String.format("Owned by: %s", owner), TextColor.color(204, 204, 204)),

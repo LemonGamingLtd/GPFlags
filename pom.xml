@@ -12,8 +12,8 @@
 <!--        this is the real java version used for compilation-->
 <!--        the mc server must have a java version equal or higher than this-->
 <!--        the intelliJ project version is just used for linting-->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--This is used to show the build number for jenkins.-->
         <!--suppress UnresolvedMavenProperty -->
@@ -181,7 +181,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.4.1</version>
+                        <version>3.4.2</version>
                     </plugin>
                 </plugins>
             </build>
@@ -216,7 +216,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

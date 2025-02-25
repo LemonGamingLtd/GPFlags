@@ -358,12 +358,13 @@ public class Util {
     }
 
     public static boolean isSpawnerReason(SpawnReason reason) {
-        if (reason == SpawnReason.SPAWNER) return true;
-        if (reason == SpawnReason.SPAWNER_EGG) return true;
-        try {
-            if (reason == SpawnReason.TRIAL_SPAWNER) return true;
-        } catch (NoSuchFieldError ignored) {}
-        return false;
+        return reason.name().contains("SPAWNER");
+        //if (reason == SpawnReason.SPAWNER) return true;
+        //if (reason == SpawnReason.SPAWNER_EGG) return true;
+        //try {
+        //    //if (reason == SpawnReason.TRIAL_SPAWNER) return true;
+        //} catch (NoSuchFieldError ignored) {}
+        //return false;
     }
 
 }
