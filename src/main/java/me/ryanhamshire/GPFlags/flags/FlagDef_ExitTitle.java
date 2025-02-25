@@ -29,7 +29,7 @@ public class FlagDef_ExitTitle extends PlayerMovementFlagDefinition {
         // moving to different claim with the same message
         if (flagTo != null && flagTo.parameters.equals(flagFrom.parameters)) return;
 
-        final String owner = claimTo != null ? claimTo.getOwnerName() : "N/A";
+        final String owner = claimFrom != null ? claimFrom.getOwnerName() : "N/A";
         final Title title = Title.title(
             Component.text("Leaving Claim", NamedTextColor.RED),
             Component.text(String.format("Owned by: %s", owner), TextColor.color(204, 204, 204)),
