@@ -282,11 +282,12 @@ public class FlagsDataStore {
         this.addDefault(defaults, Messages.NoOwnerFlag, "You cannot set both OwnerFly and OwnerMemberFly flags in one claim.", null);
 
         this.addDefault(defaults, Messages.ChangeBiomeSet, "The biome in this claim has been set to {0}. Relog to see the changes.", "0: Biome");
-        this.addDefault(defaults, Messages.ChangeBiomeUnset, "The biome in this claim has been restored. Relog to see the changes.", null);
+        this.addDefault(defaults, Messages.ChangeBiomeUnset, "You've unset the ChangeBiome flag.", null);
 
         this.addDefault(defaults, Messages.NoFlagInClaim, "This flag cannot be set in a claim.", null);
         this.addDefault(defaults, Messages.NoFlagInWorld, "This flag cannot be set for a whole world.", null);
         this.addDefault(defaults, Messages.NoFlagInServer, "This flag cannot be set for the whole server.", null);
+        this.addDefault(defaults, Messages.NoFlagInDefault, "This flag cannot be set as a default flag.", null);
 
         this.addDefault(defaults, Messages.EnableNoOpenDoor, "Doors can no longer be opened in this area.", null);
         this.addDefault(defaults, Messages.DisableNoOpenDoor, "Doors can now be opened in this area.", null);
@@ -375,8 +376,8 @@ public class FlagsDataStore {
         this.addDefault(defaults, Messages.EnabledAllowInfest, "Silverfish can now infest blocks in this area.", null);
         this.addDefault(defaults, Messages.DisabledAllowInfest, "Silverfish can no longer infest blocks in this area.", null);
 
-        this.addDefault(defaults, Messages.EnableNoPlayerCropTrampling, "Players can no longer trample blocks in this area.", null);
-        this.addDefault(defaults, Messages.DisableNoPlayerCropTrampling, "Players can now trample blocks in this area.", null);
+        this.addDefault(defaults, Messages.EnableNoCropTrampling, "Disabled crop trampling in this area.", null);
+        this.addDefault(defaults, Messages.DisableNoCropTrampling, "Enabled crop trampling in this area.", null);
 
         this.addDefault(defaults, Messages.EnabledNoPotionEffects, "Potion effects are now disabled in this region.", null);
         this.addDefault(defaults, Messages.DisabledNoPotionEffects, "Potion effects are now enabled in this region.", null);
@@ -391,6 +392,9 @@ public class FlagsDataStore {
         this.addDefault(defaults, Messages.EnableBuySubclaim, "This subclaim can now be bought for {0}.", "0: cost");
         this.addDefault(defaults, Messages.DisableBuySubclaim, "This subclaim can no longer be purchased.", null);
         this.addDefault(defaults, Messages.SubclaimPrice, "You can buy this subclaim for {0}. If you wish to do so, use /buysubclaim.", "0: cost");
+
+        this.addDefault(defaults, Messages.EnabledAllowVillagerTrading, "Players can now trade with villagers in this claim.", null);
+        this.addDefault(defaults, Messages.DisabledAllowVillagerTrading, "Players can no longer trade with villagers in this claim.", null);
 
         //load the config file
         File file = new File(messagesFilePath);

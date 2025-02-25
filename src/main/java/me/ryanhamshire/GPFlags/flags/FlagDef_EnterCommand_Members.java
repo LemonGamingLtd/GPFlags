@@ -17,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_EnterCommand_Members extends PlayerMovementFlagDefinition {
 
@@ -25,12 +26,8 @@ public class FlagDef_EnterCommand_Members extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (claimTo == null) return;
-        Flag flagTo = plugin.getFlagManager().getEffectiveFlag(to, this.getName(), claimTo);
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
         if (flagTo == null) return;
-        Flag flagFrom = plugin.getFlagManager().getEffectiveFlag(lastLocation, this.getName(), claimFrom);
-        if (flagFrom == flagTo) return;
         // moving to different claim with the same params
         if (flagFrom != null && flagFrom.parameters.equals(flagTo.parameters)) return;
 
@@ -40,32 +37,19 @@ public class FlagDef_EnterCommand_Members extends PlayerMovementFlagDefinition {
         executeFlagCommandsFromConsole(flagTo, player, claimTo);
     }
 
-    public void executeFlagCommandsFromConsole(Flag flag, Player player, Claim claim) {
+    public void executeFlagCommandsFromConsole(Flag flag, Player player, @Nullable Claim claim) {
         String commandLinesString = flag.parameters.replace("%name%", player.getName()).replace("%uuid%", player.getUniqueId().toString());
-        String ownerName = claim.getOwnerName();
-        if (ownerName != null) {
-            commandLinesString = commandLinesString.replace("%owner%", ownerName);
+        if (claim != null) {
+            String ownerName = claim.getOwnerName();
+            if (ownerName != null) {
+                commandLinesString = commandLinesString.replace("%owner%", ownerName);
+            }
         }
         String[] commandLines = commandLinesString.split(";");
         for (String commandLine : commandLines) {
             MessagingUtil.logFlagCommands("Entrance command: " + commandLine);
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), commandLine);
         }
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        Location location = player.getLocation();
-        PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, playerData.lastClaim);
-        if (claim == null) return;
-        Flag flag = GPFlags.getInstance().getFlagManager().getEffectiveFlag(location, this.getName(), claim);
-        if (flag == null) return;
-
-        if (!Util.canAccess(claim, player)) return;
-
-        executeFlagCommandsFromConsole(flag, player, claim);
     }
 
     @Override

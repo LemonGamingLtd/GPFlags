@@ -18,11 +18,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -140,6 +136,19 @@ public class FlagManager {
             def.incrementInstances();
         }
         claimFlags.put(key, flag);
+
+        // Deal with default flags being set
+        if (DEFAULT_FLAG_ID.equals(claimId)) {
+            for (Claim claim : GriefPrevention.instance.dataStore.getClaims()) {
+                if (isActive) {
+                    def.onFlagSet(claim, flag.parameters);
+                } else {
+                    def.onFlagUnset(claim);
+                }
+            }
+            return result;
+        }
+
         Claim claim;
         try {
             claim = GriefPrevention.instance.dataStore.getClaim(Long.parseLong(claimId));
@@ -190,14 +199,14 @@ public class FlagManager {
     /**
      * @param location
      * @param flagname
-     * @param cachedClaim
+     * @param claim
      * @return the effective flag at the location
      */
-    public @Nullable Flag getEffectiveFlag(@NotNull Location location, @NotNull String flagname, @Nullable Claim cachedClaim) {
+    public @Nullable Flag getEffectiveFlag(@Nullable Location location, @NotNull String flagname, @Nullable Claim claim) {
+        if (location == null) return null;
         flagname = flagname.toLowerCase();
         Flag flag;
         if (GriefPrevention.instance.claimsEnabledForWorld(location.getWorld())) {
-            Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, cachedClaim);
             if (claim != null) {
                 flag = getRawClaimFlag(claim, flagname);
                 if (flag != null) {
@@ -221,6 +230,46 @@ public class FlagManager {
         }
 
         flag = getRawWorldFlag(location.getWorld(), flagname);
+        if (flag != null && flag.getSet()) return flag;
+
+        flag = getRawServerFlag(flagname);
+        if (flag != null && flag.getSet()) return flag;
+
+        return null;
+    }
+
+    /**
+     *
+     * @param flagname
+     * @param claim
+     * @param world World to be checked if claim is null
+     * @return
+     */
+    public @Nullable Flag getEffectiveFlag(@NotNull String flagname, @Nullable Claim claim, @NotNull World world) {
+        flagname = flagname.toLowerCase();
+        Flag flag;
+        if (claim != null && GriefPrevention.instance.claimsEnabledForWorld(world)) {
+            flag = getRawClaimFlag(claim, flagname);
+            if (flag != null) {
+                if (flag.getSet()) return flag;
+                return null;
+            }
+            Claim parent = claim.parent;
+            if (parent != null) {
+                flag = getRawClaimFlag(parent, flagname);
+                if (flag != null) {
+                    if (flag.getSet()) return flag;
+                    return null;
+                }
+            }
+            flag = getRawDefaultFlag(flagname);
+            if (flag != null) {
+                if (flag.getSet()) return flag;
+                return null;
+            }
+        }
+
+        flag = getRawWorldFlag(world, flagname);
         if (flag != null && flag.getSet()) return flag;
 
         flag = getRawServerFlag(flagname);

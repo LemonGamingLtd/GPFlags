@@ -10,13 +10,12 @@ import me.ryanhamshire.GPFlags.util.MessagingUtil;
 import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_NoEnter extends PlayerMovementFlagDefinition implements Runnable {
 
@@ -39,31 +38,28 @@ public class FlagDef_NoEnter extends PlayerMovementFlagDefinition implements Run
         }
     }
 
-
     @Override
     public boolean allowMovement(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (player.hasPermission("gpflags.bypass.noenter")) return true;
-
-        Flag flag = this.getFlagInstanceAtLocation(to, player);
-        if (flag == null) return true;
-
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(to, false, claimTo);
-        if (Util.canAccess(claim, player)) return true;
+        Flag flag = getEffectiveFlag(claimTo, to);
+        if (isAllowed(flag, claimTo, player)) return true;
 
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterMessage);
         return false;
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
-        if (flag == null) return;
-        PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), false, playerData.lastClaim);
-        if (Util.canAccess(claim, player)) return;
+    @Override
+    public void onChangeClaim(@NotNull Player player, @Nullable Location from, @NotNull Location to, @Nullable Claim claimFrom, @Nullable Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        if (isAllowed(flagTo, claimTo, player)) return;
+
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterMessage);
         GriefPrevention.instance.ejectPlayer(player);
+    }
+
+    private boolean isAllowed(Flag flag, Claim claim, Player player) {
+        if (flag == null) return true;
+        if (Util.canAccess(claim, player)) return true;
+        if (player.hasPermission("gpflags.bypass.noenter")) return true;
+        return false;
     }
 
     @Override
@@ -77,9 +73,8 @@ public class FlagDef_NoEnter extends PlayerMovementFlagDefinition implements Run
                     return;
                 }
 
-                PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(onlinePlayer.getUniqueId());
                 Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, playerData.lastClaim);
-                if (Util.canAccess(claim, onlinePlayer)) {
+                if (isAllowed(flag, claim, onlinePlayer)) {
                     return;
                 }
 

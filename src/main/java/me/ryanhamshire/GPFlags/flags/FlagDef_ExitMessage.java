@@ -12,6 +12,7 @@ import me.ryanhamshire.GriefPrevention.Claim;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_ExitMessage extends PlayerMovementFlagDefinition {
 
@@ -23,18 +24,16 @@ public class FlagDef_ExitMessage extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (claimFrom == null) return;
-        Flag flagFrom = plugin.getFlagManager().getEffectiveFlag(lastLocation, this.getName(), claimFrom);
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
         if (flagFrom == null) return;
-        Flag flagTo = plugin.getFlagManager().getEffectiveFlag(to, this.getName(), claimTo);
-        if (flagFrom == flagTo) return;
         // moving to different claim with the same message
         if (flagTo != null && flagTo.parameters.equals(flagFrom.parameters)) return;
         String message = flagFrom.parameters;
-        String ownerName = claimFrom.getOwnerName();
-        if (ownerName != null) {
-            message = message.replace("%owner%", ownerName);
+        if (claimFrom != null) {
+            String ownerName = claimFrom.getOwnerName();
+            if (ownerName != null) {
+                message = message.replace("%owner%", ownerName);
+            }
         }
         message = message.replace("%name%", player.getName());
         MessagingUtil.sendMessage(player, TextMode.Info + prefix + message);

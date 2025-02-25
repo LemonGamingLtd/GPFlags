@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_ExitActionbar extends PlayerMovementFlagDefinition {
 
@@ -15,12 +16,8 @@ public class FlagDef_ExitActionbar extends PlayerMovementFlagDefinition {
     }
 
     @Override
-    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        if (claimFrom == null) return;
-        Flag flagFrom = plugin.getFlagManager().getEffectiveFlag(lastLocation, this.getName(), claimFrom);
+    public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
         if (flagFrom == null) return;
-        Flag flagTo = plugin.getFlagManager().getEffectiveFlag(to, this.getName(), claimTo);
-        if (flagFrom == flagTo) return;
         // moving to different claim with the same message
         if (flagTo != null && flagTo.parameters.equals(flagFrom.parameters)) return;
 
@@ -29,9 +26,11 @@ public class FlagDef_ExitActionbar extends PlayerMovementFlagDefinition {
 
     public void sendActionbar(Flag flag, Player player, Claim claim) {
         String message = flag.parameters;
-        String owner = claim.getOwnerName();
-        if (owner != null) {
-            message = message.replace("%owner%", owner);
+        if (claim != null) {
+            String owner = claim.getOwnerName();
+            if (owner != null) {
+                message = message.replace("%owner%", owner);
+            }
         }
         message = message.replace("%name%", player.getName());
         MessagingUtil.sendActionbar(player, message);

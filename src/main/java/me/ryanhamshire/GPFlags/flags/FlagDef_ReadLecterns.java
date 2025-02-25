@@ -50,9 +50,9 @@ public class FlagDef_ReadLecterns extends FlagDefinition {
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(block.getLocation(), false, playerData.lastClaim);
         if (claim == null) return;
-        if (claim.ownerID == null) return;
-        if (claim.ownerID.equals(player.getUniqueId())) return;
-        if (claim.checkPermission(player, ClaimPermission.Inventory, interactEvent) == null) return;
+        if (player.getUniqueId().equals(claim.getOwnerID())) return;
+        // Dont pass in the event so we dont infinite loop
+        if (claim.checkPermission(player, ClaimPermission.Inventory, null) == null) return;
 
         Lectern lectern = (Lectern) state;
         ItemStack book = lectern.getInventory().getItem(0);
@@ -97,6 +97,6 @@ public class FlagDef_ReadLecterns extends FlagDefinition {
 
     @Override
     public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM);
+        return Arrays.asList(FlagType.CLAIM, FlagType.DEFAULT);
     }
 }

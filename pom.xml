@@ -6,7 +6,7 @@
 
     <groupId>me.ryanhamshire</groupId>
     <artifactId>GPFlags</artifactId>
-    <version>5.13.5-SNAPSHOT</version>
+    <version>5.13.7.${build.number}</version>
 
     <properties>
 <!--        this is the real java version used for compilation-->
@@ -64,10 +64,6 @@
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
         <repository>
-            <id>placeholderapi</id>
-            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-        </repository>
-        <repository>
             <id>devmart-other</id>
             <url>https://nexuslite.gcnt.net/repos/other/</url>
         </repository>
@@ -84,9 +80,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.griefprevention</groupId>
+            <groupId>com.github.TechFortress</groupId>
             <artifactId>GriefPrevention</artifactId>
-            <version>16.18.3-SNAPSHOT</version>
+            <version>17.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -108,13 +104,13 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
+            <version>24.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.7</version>
+            <version>1.7.1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -126,7 +122,7 @@
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>Mythic-Dist</artifactId>
-            <version>5.0.3-SNAPSHOT</version>
+            <version>5.6.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -138,7 +134,7 @@
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
-            <version>3.6.3</version>
+            <version>3.9.8</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -154,8 +150,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>me.clip</groupId>
-            <artifactId>placeholderapi</artifactId>
+            <groupId>com.github.PlaceholderAPI</groupId>
+            <artifactId>PlaceholderAPI</artifactId>
             <version>2.11.5</version>
             <scope>provided</scope>
         </dependency>
@@ -169,6 +165,12 @@
             <artifactId>adventure-platform-bukkit</artifactId>
             <version>4.3.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -179,7 +181,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.4.1</version>
                     </plugin>
                 </plugins>
             </build>
@@ -203,7 +205,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.4.1</version>
                 <configuration>
                     <links>
                         <link>https://hub.spigotmc.org/javadocs/spigot/</link>
@@ -239,6 +241,10 @@
                                 <relocation>
                                     <pattern>com.tcoded</pattern>
                                     <shadedPattern>me.ryanhamshire.GPFlags.libs.com.tcoded</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>me.ryanhamshire.GPFlags.libs.bstats</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

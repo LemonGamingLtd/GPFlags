@@ -26,7 +26,7 @@ public class FlagDef_PermissionFly extends FlagDefinition {
     @Override
     public void onFlagUnset(Claim claim) {
         for (Player p : Util.getPlayersIn(claim)) {
-            FlightManager.managePlayerFlight(p, null, p.getLocation());
+            FlightManager.manageFlightLater(p, 1, p.getLocation());
         }
     }
 
@@ -49,11 +49,6 @@ public class FlagDef_PermissionFly extends FlagDefinition {
     @Override
     public MessageSpecifier getUnSetMessage() {
         return new MessageSpecifier(Messages.PermissionFlightDisabled);
-    }
-
-    @Override
-    public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
     }
 
 }

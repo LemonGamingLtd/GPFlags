@@ -16,8 +16,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_NoEnterPlayer extends PlayerMovementFlagDefinition implements Runnable {
 
@@ -41,25 +41,17 @@ public class FlagDef_NoEnterPlayer extends PlayerMovementFlagDefinition implemen
 
     @Override
     public boolean allowMovement(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo) {
-        Flag flag = this.getFlagInstanceAtLocation(to, player);
-        if (flag == null) return true;
-
+        Flag flag = getEffectiveFlag(claimTo, to);
         if (isAllowed(player, claimTo, flag)) return true;
 
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterPlayerMessage);
         return false;
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        Location loc = player.getLocation();
-
-        Flag flag = this.getFlagInstanceAtLocation(loc, player);
-        if (flag == null) return;
-
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), false, null);
-        if (isAllowed(player, claim, flag)) return;
+    @Override
+    public void onChangeClaim(@NotNull Player player, @Nullable Location from, @NotNull Location to, @Nullable Claim claimFrom, @Nullable Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
+        if (flagTo == null) return;
+        if (isAllowed(player, claimTo, flagTo)) return;
 
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterPlayerMessage);
         GriefPrevention.instance.ejectPlayer(player);

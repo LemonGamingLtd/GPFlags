@@ -144,7 +144,7 @@ public class GPFlagsConfig {
             this.flagManager.registerFlagDefinition(new FlagDef_CommandWhiteList(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_CommandBlackList(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_NoStructureGrowth(this.flagManager, plugin));
-            this.flagManager.registerFlagDefinition(new FlagDef_NoBlockFade(this.flagManager, plugin));            this.flagManager.registerFlagDefinition(new FlagDef_NoBlockFade(this.flagManager, plugin));
+            this.flagManager.registerFlagDefinition(new FlagDef_NoBlockFade(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_AllowInfest(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_NoCoralDeath(this.flagManager, plugin));
 
@@ -198,11 +198,13 @@ public class GPFlagsConfig {
             this.flagManager.registerFlagDefinition(new FlagDef_NotifyExit(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_NoPotionEffects(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_SpawnReasonWhitelist(this.flagManager, plugin));
-            this.flagManager.registerFlagDefinition(new FlagDef_NoPlayerCropTrampling(this.flagManager, plugin));
+            this.flagManager.registerFlagDefinition(new FlagDef_NoCropTrampling(this.flagManager, plugin));
 
             this.flagManager.registerFlagDefinition(new FlagDef_ViewContainers(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_ReadLecterns(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_AllowWitherDamage(this.flagManager, plugin));
+
+            this.flagManager.registerFlagDefinition(new FlagDef_AllowVillagerTrading(this.flagManager, plugin));
 
             try {
                 Class.forName("org.bukkit.event.raid.RaidTriggerEvent");

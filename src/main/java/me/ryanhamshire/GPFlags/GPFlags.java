@@ -1,15 +1,21 @@
 package me.ryanhamshire.GPFlags;
 
 import java.util.*;
+import java.util.logging.Level;
+
 import com.tcoded.folialib.FoliaLib;
+import com.google.common.collect.ImmutableMap;
 import me.ryanhamshire.GPFlags.commands.*;
 import me.ryanhamshire.GPFlags.flags.FlagDefinition;
+import me.ryanhamshire.GPFlags.hooks.PlaceholderApiHook;
 import me.ryanhamshire.GPFlags.listener.*;
-import me.ryanhamshire.GPFlags.metrics.Metrics;
 import me.ryanhamshire.GPFlags.util.MessagingUtil;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import org.bstats.charts.DrilldownPie;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -51,6 +57,7 @@ public class GPFlags extends JavaPlugin {
         } catch (ClassNotFoundException e) {
             Bukkit.getPluginManager().registerEvents(new ClaimModifiedListener(), this);
         }
+        Bukkit.getPluginManager().registerEvents(new ClaimCreatedListener(), this);
         Bukkit.getPluginManager().registerEvents(new ClaimTransferListener(), this);
         Bukkit.getPluginManager().registerEvents(new FlightManager(), this);
 
@@ -74,21 +81,17 @@ public class GPFlags extends JavaPlugin {
         getCommand("bulksetflag").setExecutor(new CommandBulkSetFlag());
         getCommand("bulkunsetflag").setExecutor(new CommandBulkUnsetFlag());
 
+        UpdateChecker.run(this, "gpflags");
 
-        Metrics metrics = new Metrics(this, 17786);
-        Set<String> usedFlags = GPFlags.getInstance().getFlagManager().getUsedFlags();
-        Collection<FlagDefinition> defs = GPFlags.getInstance().getFlagManager().getFlagDefinitions();
-        for (FlagDefinition def : defs) {
-            metrics.addCustomChart(new Metrics.SimplePie("using_" + def.getName().toLowerCase(), () -> {
-                return String.valueOf(usedFlags.contains(def.getName().toLowerCase()));
-            }));
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderApiHook(this).register();
         }
 
-        metrics.addCustomChart(new Metrics.SimplePie("griefprevention_version", () -> {
-            return GriefPrevention.instance.getDescription().getVersion();
-        }));
-
-        UpdateChecker.run(this, "gpflags");
+        try {
+            addCustomMetrics();
+        } catch (Throwable e) {
+            getLogger().log(Level.WARNING, "Error enabling metrics", e);
+        }
 
         float finish = (float) (System.currentTimeMillis() - start) / 1000;
         MessagingUtil.sendMessage(null, "Successfully loaded in " + String.format("%.2f", finish) + " seconds");
@@ -168,13 +171,35 @@ public class GPFlags extends JavaPlugin {
         return this.worldSettingsManager;
     }
 
-    /**
-     * Get an instance of the player listener class
-     *
-     * @return Instance of the player listener class
-     */
-    public PlayerListener getPlayerListener() {
-        return this.playerListener;
+    private void addCustomMetrics() {
+        Metrics bStats = new Metrics(this, 17786);
+
+        Set<String> usedFlags = GPFlags.getInstance().getFlagManager().getUsedFlags();
+        Collection<FlagDefinition> defs = GPFlags.getInstance().getFlagManager().getFlagDefinitions();
+        for (FlagDefinition def : defs) {
+            bStats.addCustomChart(new SimplePie("using_" + def.getName().toLowerCase(), () -> {
+                return String.valueOf(usedFlags.contains(def.getName().toLowerCase()));
+            }));
+        }
+        bStats.addCustomChart(new SimplePie("griefprevention_version", () -> {
+            return GriefPrevention.instance.getDescription().getVersion();
+        }));
+
+        String serverVersion = getServer().getBukkitVersion().split("-")[0];
+
+        bStats.addCustomChart(createStaticDrilldownStat("version_mc_plugin", serverVersion, getDescription().getVersion()));
+        bStats.addCustomChart(createStaticDrilldownStat("version_plugin_mc", getDescription().getVersion(), serverVersion));
+
+        bStats.addCustomChart(createStaticDrilldownStat("version_brand_plugin", getServer().getName(), getDescription().getVersion()));
+        bStats.addCustomChart(createStaticDrilldownStat("version_plugin_brand", getDescription().getVersion(), getServer().getName()));
+
+        bStats.addCustomChart(createStaticDrilldownStat("version_mc_brand", serverVersion, getServer().getName()));
+        bStats.addCustomChart(createStaticDrilldownStat("version_brand_mc", getServer().getName(), serverVersion));
+    }
+
+    private static DrilldownPie createStaticDrilldownStat(String statId, String value1, String value2) {
+        final Map<String, Map<String, Integer>> map = ImmutableMap.of(value1, ImmutableMap.of(value2, 1));
+        return new DrilldownPie(statId, () -> map);
     }
 
 }

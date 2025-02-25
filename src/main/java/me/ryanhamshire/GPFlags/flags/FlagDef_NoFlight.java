@@ -16,12 +16,25 @@ public class FlagDef_NoFlight extends FlagDefinition {
         super(manager, plugin);
     }
 
+    @Override
+    public void onFlagSet(Claim claim, String param) {
+        for (Player p : Util.getPlayersIn(claim)) {
+            FlightManager.managePlayerFlight(p, null, p.getLocation());
+        }
+    }
+
+    @Override
+    public void onFlagUnset(Claim claim) {
+        for (Player p : Util.getPlayersIn(claim)) {
+            FlightManager.manageFlightLater(p, 1, p.getLocation());
+        }
+    }
+
     public static boolean letPlayerFly(Player player, Location location, Claim claim) {
         Flag flag = GPFlags.getInstance().getFlagManager().getEffectiveFlag(location, "NoFlight", claim);
         if (flag == null) return true;
         return Util.shouldBypass(player, claim, flag);
     }
-
 
     @Override
     public String getName() {
@@ -40,6 +53,6 @@ public class FlagDef_NoFlight extends FlagDefinition {
 
     @Override
     public List<FlagType> getFlagType() {
-        return Arrays.asList(FlagType.CLAIM, FlagType.WORLD, FlagType.SERVER);
+        return Arrays.asList(FlagType.CLAIM, FlagType.DEFAULT, FlagType.WORLD, FlagType.SERVER);
     }
 }

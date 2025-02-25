@@ -8,21 +8,10 @@ import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.entity.minecart.CommandMinecart;
-import org.bukkit.entity.minecart.ExplosiveMinecart;
-import org.bukkit.entity.minecart.HopperMinecart;
-import org.bukkit.entity.minecart.PoweredMinecart;
-import org.bukkit.entity.minecart.RideableMinecart;
-import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.util.StringUtil;
@@ -33,121 +22,6 @@ import java.util.*;
 
 @SuppressWarnings("WeakerAccess")
 public class Util {
-
-    /**
-     * Check if server is running a minimum Minecraft version
-     *
-     * @param major Major version to check (Most likely just going to be 1)
-     * @param minor Minor version to check
-     * @return True if running this version or higher
-     */
-    public static boolean isRunningMinecraft(int major, int minor) {
-        return isRunningMinecraft(major, minor, 0);
-    }
-
-    /**
-     * Check if server is running a minimum Minecraft version
-     *
-     * @param major    Major version to check (Most likely just going to be 1)
-     * @param minor    Minor version to check
-     * @param revision Revision to check
-     * @return True if running this version or higher
-     */
-    public static boolean isRunningMinecraft(int major, int minor, int revision) {
-        String[] version = getMinecraftVersion().split("\\.");
-        int maj = Integer.parseInt(version[0]);
-        int min = Integer.parseInt(version[1]);
-        int rev;
-        try {
-            rev = Integer.parseInt(version[2]);
-        } catch (Throwable ignore) {
-            rev = 0;
-        }
-        return maj > major || min > minor || (min == minor && rev >= revision);
-    }
-
-    /**
-     * Get the Minecraft version the server is running
-     *
-     * @return Minecraft version the server is running
-     */
-    public static String getMinecraftVersion() {
-        return Bukkit.getBukkitVersion().split("-")[0];
-    }
-
-    /**
-     * Get the ItemStack form of a vehicle
-     * <p>Specifically a boat or minecart</p>
-     *
-     * @param vehicle Vehicle to get item from
-     * @return ItemStack that matches vehicle
-     */
-    public static ItemStack getItemFromVehicle(Vehicle vehicle) {
-        Material material = null;
-        if (vehicle instanceof Boat) {
-            switch (((Boat) vehicle).getWoodType()) {
-                case BIRCH:
-                    material = Material.BIRCH_BOAT;
-                    break;
-                case ACACIA:
-                    material = Material.ACACIA_BOAT;
-                    break;
-                case JUNGLE:
-                    material = Material.JUNGLE_BOAT;
-                    break;
-                case REDWOOD:
-                    material = Material.SPRUCE_BOAT;
-                    break;
-                case DARK_OAK:
-                    material = Material.DARK_OAK_BOAT;
-                    break;
-                default:
-                    material = Material.OAK_BOAT;
-            }
-        } else if (vehicle instanceof RideableMinecart) {
-            material = Material.MINECART;
-        } else if (vehicle instanceof StorageMinecart) {
-            material = Material.CHEST_MINECART;
-        } else if (vehicle instanceof CommandMinecart) {
-            material = Material.COMMAND_BLOCK_MINECART;
-        } else if (vehicle instanceof ExplosiveMinecart) {
-            material = Material.TNT_MINECART;
-        } else if (vehicle instanceof HopperMinecart) {
-            material = Material.HOPPER_MINECART;
-        } else if (vehicle instanceof PoweredMinecart) {
-            material = Material.FURNACE_MINECART;
-        }
-        if (material != null) {
-            return new ItemStack(material);
-        }
-        return null;
-    }
-
-    /**
-     * Check if an ItemStack is a vehicle
-     * <p>Specifically a boat or minecart</p>
-     *
-     * @param itemStack ItemStack to check
-     * @return True if item is a vehicle
-     */
-    public static boolean isAVehicle(ItemStack itemStack) {
-        switch (itemStack.getType()) {
-            case MINECART:
-            case CHEST_MINECART:
-            case COMMAND_BLOCK_MINECART:
-            case FURNACE_MINECART:
-            case HOPPER_MINECART:
-            case TNT_MINECART:
-            case BIRCH_BOAT:
-            case ACACIA_BOAT:
-            case DARK_OAK_BOAT:
-            case JUNGLE_BOAT:
-            case OAK_BOAT:
-            case SPRUCE_BOAT:
-                return true;
-        }
-        return false;
-    }
 
     public static boolean isMonster(Entity entity) {
         EntityType type = entity.getType();
@@ -311,14 +185,24 @@ public class Util {
         }
     }
 
-    public static Location getInBoundsLocation(Player p) {
-        Location loc = p.getLocation();
+    /**
+     * We want to consider someone above the world height to be within a claim
+     * but below world height to not be in a claim.
+     * @param loc Actual location
+     * @return A mock location for the player that can be used to find the claim
+     */
+    public static Location getInBoundsLocation(@NotNull Location loc) {
+        // If we're below max height, mock location can be the same
         World world = loc.getWorld();
-        int maxHeight = Util.getMaxHeight(world);
-        if (loc.getBlockY() >= maxHeight) {
-            loc.setY(maxHeight - 1);
-        }
-        return loc;
+        int maxHeight = getMaxHeight(world);
+        if (loc.getBlockY() <= maxHeight) return loc;
+
+        // If we're above max height, make a new mock location
+        return new Location(loc.getWorld(), loc.getX(), maxHeight, loc.getZ());
+    }
+
+    public static Location getInBoundsLocation(Player p) {
+        return getInBoundsLocation(p.getLocation());
     }
 
     public static boolean isClaimOwner(Claim c, Player p) {
@@ -397,6 +281,89 @@ public class Util {
             def = def.substring(0, def.length() - 4);
         }
         return def;
+    }
+
+    private static ArrayList<ItemStack> getDrops(Vehicle vehicle) {
+        ArrayList<ItemStack> drops = new ArrayList<>();
+        if (!vehicle.isValid()) return drops;
+
+        if (vehicle instanceof Boat) {
+            Boat boat = (Boat) vehicle;
+            drops.add(new ItemStack(boat.getBoatMaterial()));
+        } else if (vehicle instanceof Minecart) {
+            Minecart cart = (Minecart) vehicle;
+            drops.add(new ItemStack(cart.getMinecartMaterial()));
+        }
+        if (!(vehicle instanceof InventoryHolder)) return drops;
+
+        InventoryHolder holder = (InventoryHolder) vehicle;
+        for (ItemStack stack : holder.getInventory()) {
+            if (stack != null ) {
+                drops.add(stack);
+            }
+        }
+        return drops;
+    }
+
+    public static void breakVehicle(Vehicle vehicle, Location location) {
+        if (!vehicle.isValid()) {
+            return;
+        }
+        ArrayList<ItemStack> drops = getDrops(vehicle);
+        World world = vehicle.getWorld();
+        vehicle.eject();
+        vehicle.remove();
+        for (ItemStack stack : drops) {
+            world.dropItem(location, stack);
+        }
+    }
+
+    /**
+     * Get the list of Players who move with this player
+     * @param entity
+     * @return
+     */
+    public static Set<Player> getMovementGroup(Entity entity) {
+        Set<Player> group = new HashSet<>();
+
+        // Add the entity if it's a person
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
+            group.add(player);
+        }
+
+        // Add everyone riding the entity
+        List<Entity> passengers = entity.getPassengers();
+        for (Entity passenger : passengers) {
+            if (passenger instanceof Player) {
+                Player person = ((Player) passenger);
+                group.add(person);
+            }
+        }
+
+        // Get all passengers riding the same vehicle as entity
+        Entity mount = entity.getVehicle();
+        if (mount instanceof Vehicle) {
+            Vehicle vehicle = (Vehicle) mount;
+            passengers = vehicle.getPassengers();
+            for (Entity passenger : passengers) {
+                if (passenger instanceof Player) {
+                    Player person = ((Player) passenger);
+                    group.add(person);
+                }
+            }
+        }
+
+        return group;
+    }
+
+    public static boolean isSpawnerReason(SpawnReason reason) {
+        if (reason == SpawnReason.SPAWNER) return true;
+        if (reason == SpawnReason.SPAWNER_EGG) return true;
+        try {
+            if (reason == SpawnReason.TRIAL_SPAWNER) return true;
+        } catch (NoSuchFieldError ignored) {}
+        return false;
     }
 
 }
