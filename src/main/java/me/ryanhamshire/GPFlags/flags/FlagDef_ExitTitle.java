@@ -25,9 +25,9 @@ public class FlagDef_ExitTitle extends PlayerMovementFlagDefinition {
 
     @Override
     public void onChangeClaim(Player player, Location lastLocation, Location to, Claim claimFrom, Claim claimTo, @Nullable Flag flagFrom, @Nullable Flag flagTo) {
-        if (flagTo == null) return;
-        // moving to different claim with the same params
-        if (flagFrom != null && flagFrom.parameters.equals(flagTo.parameters)) return;
+        if (flagFrom == null) return;
+        // moving to different claim with the same message
+        if (flagTo != null && flagTo.parameters.equals(flagFrom.parameters)) return;
 
         final String owner = claimTo != null ? claimTo.getOwnerName() : "N/A";
         final Title title = Title.title(

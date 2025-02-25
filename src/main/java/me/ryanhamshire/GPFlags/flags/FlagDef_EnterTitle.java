@@ -7,8 +7,6 @@ import me.ryanhamshire.GPFlags.MessageSpecifier;
 import me.ryanhamshire.GPFlags.Messages;
 import me.ryanhamshire.GPFlags.SetFlagResult;
 import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -17,8 +15,6 @@ import net.kyori.adventure.util.Ticks;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class FlagDef_EnterTitle extends PlayerMovementFlagDefinition {
@@ -34,23 +30,6 @@ public class FlagDef_EnterTitle extends PlayerMovementFlagDefinition {
         if (flagFrom != null && flagFrom.parameters.equals(flagTo.parameters)) return;
 
         final String owner = claimTo != null ? claimTo.getOwnerName() : "N/A";
-        final Title title = Title.title(
-            Component.text("Entering Claim", NamedTextColor.GREEN),
-            Component.text(String.format("Owned by: %s", owner), TextColor.color(204, 204, 204)),
-            Title.Times.times(Ticks.duration(10L), Ticks.duration(25L), Ticks.duration(10L))
-        );
-        GPFlags.getInstance().getAdventure().player(player).showTitle(title);
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
-        Flag flag = this.getFlagInstanceAtLocation(player.getLocation(), player);
-        if (flag == null) return;
-        PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
-        Claim lastClaim = playerData.lastClaim;
-
-        final String owner = lastClaim != null ? lastClaim.getOwnerName() : "N/A";
         final Title title = Title.title(
             Component.text("Entering Claim", NamedTextColor.GREEN),
             Component.text(String.format("Owned by: %s", owner), TextColor.color(204, 204, 204)),
