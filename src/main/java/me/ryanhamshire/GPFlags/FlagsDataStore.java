@@ -324,6 +324,7 @@ public class FlagsDataStore {
         
         this.addDefault(defaults, Messages.EnableReadLecterns, "Players can now read (not manipulate) lecterns on your claim.", null);
         this.addDefault(defaults, Messages.DisableReadLecterns, "Players can no longer read lecterns on your claim", null);
+        this.addDefault(defaults, Messages.LecternOpened, "Lectern opened in view-only state", "A nonempty string must be provided or the flag wont work.");
 
         this.addDefault(defaults, Messages.EnableNoBlockGravity, "Disabling block gravity in this area.", null);
         this.addDefault(defaults, Messages.DisableNoBlockGravity, "Enabling block gravity in this area.", null);
@@ -395,6 +396,9 @@ public class FlagsDataStore {
 
         this.addDefault(defaults, Messages.EnabledAllowVillagerTrading, "Players can now trade with villagers in this claim.", null);
         this.addDefault(defaults, Messages.DisabledAllowVillagerTrading, "Players can no longer trade with villagers in this claim.", null);
+
+        this.addDefault(defaults, Messages.EnabledRestoreGrazedGrass, "Grass will now immediiately regrow after being grazed by sheep.", null);
+        this.addDefault(defaults, Messages.DisabledRestoreGrazedGrass, "Grass will no longer immediately regrow after being grazed by sheep.", null);
 
         //load the config file
         File file = new File(messagesFilePath);

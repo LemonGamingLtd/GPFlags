@@ -17,6 +17,7 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityMountEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
@@ -26,6 +27,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+
+import static me.ryanhamshire.GPFlags.FlightManager.gpfAllowsFlight;
+import static me.ryanhamshire.GPFlags.FlightManager.manageFlightLater;
 
 /**
  * Purpose is
@@ -98,19 +102,52 @@ public class PlayerListener implements Listener, Runnable {
         }
     }
 
-    @EventHandler
-    private void onMount(VehicleEnterEvent event) {
-        if (event.isCancelled()) return;
+    @EventHandler(ignoreCancelled = true)
+    private void onMount(EntityMountEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Player)) return;
+        Player player = (Player) entity;
+        Location from = player.getLocation();
+        Location to = event.getMount().getLocation();
+        Set<Player> group = Util.getMovementGroup(player);
+        if (flagsPreventMovement(to, from, group)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onEnterVehicle(VehicleEnterEvent event) {
         Entity entity = event.getEntered();
         Vehicle vehicle = event.getVehicle();
-        if (entity instanceof Player) {
-            Player player = ((Player) entity);
-            Location from = player.getLocation();
-            Location to = vehicle.getLocation();
-            if (flagsPreventMovement(to, from, Set.of(player))) {
-                event.setCancelled(true);
-            }
+        if (!(entity instanceof Player)) return;
+        Player player = ((Player) entity);
+        Location from = player.getLocation();
+        Location to = vehicle.getLocation();
+        if (flagsPreventMovement(to, from, player)) {
+            event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    private void onEnterBed(PlayerBedEnterEvent event) {
+        Player player = event.getPlayer();
+        Location from = player.getLocation();
+        Location to = event.getBed().getLocation();
+        if (flagsPreventMovement(to, from, player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    private void onLeaveBed(PlayerBedLeaveEvent event) {
+        Player player = event.getPlayer();
+        Location from = player.getLocation();
+        Bukkit.getScheduler().runTaskLater(GPFlags.getInstance(), () -> {
+            Location to = player.getLocation();
+            if (flagsPreventMovement(to, from, player)) {
+                player.teleport(from.add(0, 1, 0));
+            }
+        }, 1);
     }
 
     @EventHandler
@@ -141,6 +178,10 @@ public class PlayerListener implements Listener, Runnable {
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(spawn,false, cachedClaim);
         PlayerPostClaimBorderEvent borderEvent = new PlayerPostClaimBorderEvent(event.getPlayer(), null, claim, null, spawn);
         Bukkit.getPluginManager().callEvent(borderEvent);
+    }
+
+    public static boolean flagsPreventMovement(Location to, Location from, Player player) {
+        return flagsPreventMovement(to, from, Set.of(player));
     }
 
     /**
