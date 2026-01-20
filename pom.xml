@@ -75,7 +75,7 @@
     <dependencies>
         <dependency>
             <groupId>ltd.lemongaming.citrus</groupId>
-            <artifactId>citrus-api</artifactId>
+            <artifactId>citrus-folia-api</artifactId>
             <version>1.21.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>

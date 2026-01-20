@@ -35,7 +35,7 @@ public class FlagDef_ExitTitle extends PlayerMovementFlagDefinition {
             Component.text(String.format("Owned by: %s", owner), TextColor.color(204, 204, 204)),
             Title.Times.times(Ticks.duration(10L), Ticks.duration(25L), Ticks.duration(10L))
         );
-        GPFlags.getInstance().getAdventure().player(player).showTitle(title);
+        player.showTitle(title);
     }
 
     @Override

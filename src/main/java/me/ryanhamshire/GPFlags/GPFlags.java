@@ -39,7 +39,6 @@ public class GPFlags extends JavaPlugin {
         long start = System.currentTimeMillis();
         instance = this;
         scheduler = new FoliaLib(this);
-        this.adventure = BukkitAudiences.create(this);
 
         this.playerListener = new PlayerListener();
         Bukkit.getPluginManager().registerEvents(playerListener, this);
