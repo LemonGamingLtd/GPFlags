@@ -11,7 +11,6 @@ import me.ryanhamshire.GPFlags.hooks.PlaceholderApiHook;
 import me.ryanhamshire.GPFlags.listener.*;
 import me.ryanhamshire.GPFlags.util.MessagingUtil;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
@@ -21,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.ryanhamshire.GPFlags.flags.FlagDef_ViewContainers;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * <b>Main GriefPrevention Flags class</b>
@@ -34,7 +32,6 @@ public class GPFlags extends JavaPlugin {
     private FlagsDataStore flagsDataStore;
     private final FlagManager flagManager = new FlagManager();
     private WorldSettingsManager worldSettingsManager;
-    public BukkitAudiences adventure;
     boolean registeredFlagDefinitions = false;
     private PlayerListener playerListener;
 
@@ -103,20 +100,10 @@ public class GPFlags extends JavaPlugin {
             new ArrayList<>(inv.getViewers()).forEach(HumanEntity::closeInventory);
         });
         flagsDataStore = null;
-        if (this.adventure != null) {
-            this.adventure.close();
-            this.adventure = null;
-        }
         instance = null;
         playerListener = null;
     }
 
-    public @NonNull BukkitAudiences getAdventure() {
-        if (this.adventure == null) {
-            throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
-        }
-        return this.adventure;
-    }
 
     /**
      * Reload the config file

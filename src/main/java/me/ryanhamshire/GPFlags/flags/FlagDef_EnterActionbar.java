@@ -13,6 +13,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
 
 public class FlagDef_EnterActionbar extends PlayerMovementFlagDefinition {
 
@@ -62,6 +65,11 @@ public class FlagDef_EnterActionbar extends PlayerMovementFlagDefinition {
     @Override
     public MessageSpecifier getUnSetMessage() {
         return new MessageSpecifier(Messages.RemovedEnterActionbar);
+    }
+
+    @Override
+    public List<FlagType> getFlagType() {
+        return Arrays.asList(FlagType.CLAIM, FlagType.DEFAULT, FlagType.WORLD, FlagType.SERVER);
     }
 
 }

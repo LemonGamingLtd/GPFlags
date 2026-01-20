@@ -18,8 +18,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityMountEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBedLeaveEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -27,9 +33,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
-
-import static me.ryanhamshire.GPFlags.FlightManager.gpfAllowsFlight;
-import static me.ryanhamshire.GPFlags.FlightManager.manageFlightLater;
 
 /**
  * Purpose is
@@ -126,6 +129,17 @@ public class PlayerListener implements Listener, Runnable {
         if (flagsPreventMovement(to, from, player)) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onExitVehicle(VehicleExitEvent event) {
+
+        // gets the player who is exiting the vehicle
+        if (!(event.getExited() instanceof Player)) return;
+        Player player = (Player) event.getExited();
+
+        // manage their flight
+        FlightManager.managePlayerFlight(player, null, player.getLocation());
     }
 
     @EventHandler

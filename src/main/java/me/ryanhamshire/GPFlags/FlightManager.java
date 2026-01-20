@@ -211,18 +211,30 @@ public class FlightManager implements Listener {
 
     @EventHandler
     private void onFlyToggle(PlayerToggleFlightEvent event) {
+        if (event.isFlying()) return;
         Player player = event.getPlayer();
-        Location location = player.getLocation();
-        Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, null);
-        boolean manageFlight = gpfManagesFlight(player);
-        if (!manageFlight) return;
+        GPFlags.getScheduler().getImpl().runAtEntityLater(player, () -> {
+            Location location = player.getLocation();
+            Claim claim = GriefPrevention.instance.dataStore.getClaimAt(location, false, null);
+            boolean manageFlight = gpfManagesFlight(player);
+            if (!manageFlight) return;
 
-        if (FlagDef_OwnerMemberFly.letPlayerFly(player, location, claim)) return;
-        if (FlagDef_OwnerFly.letPlayerFly(player, location, claim)) return;
-
-        if (!FlagDef_NoFlight.letPlayerFly(player, location, claim)) {
-            turnOffFlight(player);
-        }
+            if (FlagDef_OwnerMemberFly.letPlayerFly(player, location, claim)) {
+                turnOnFlight(player);
+                return;
+            }
+            if (FlagDef_OwnerFly.letPlayerFly(player, location, claim)) {
+                turnOnFlight(player);
+                return;
+            }
+            if (!FlagDef_NoFlight.letPlayerFly(player, location, claim)) {
+                return;
+            }
+            if (FlagDef_PermissionFly.letPlayerFly(player, location, claim)) {
+                turnOnFlight(player);
+                return;
+            }
+        }, 50, TimeUnit.MILLISECONDS);
     }
 
     private static void turnOffFlight(@NotNull Player player) {
