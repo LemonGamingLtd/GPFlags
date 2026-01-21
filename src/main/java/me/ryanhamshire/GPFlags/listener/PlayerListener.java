@@ -64,7 +64,7 @@ public class PlayerListener implements Listener, Runnable {
                 location.distanceSquared(lastLocation) <= DISTANCE_THRESHOLD_SQUARED) {
                 return;
             }
-            GPFlags.getScheduler().getImpl().runAtEntity(player, () -> {
+            GPFlags.getScheduler().getImpl().runAtEntity(player, (task) -> {
                 Set<Player> group = Util.getMovementGroup(player);
                 if (!flagsPreventMovement(location, lastLocation, group)) {
                     return;

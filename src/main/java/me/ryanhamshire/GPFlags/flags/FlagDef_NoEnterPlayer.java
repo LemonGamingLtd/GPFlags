@@ -77,7 +77,7 @@ public class FlagDef_NoEnterPlayer extends PlayerMovementFlagDefinition implemen
     @Override
     public void run() {
         for (final Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            GPFlags.getScheduler().getImpl().runAtEntity(onlinePlayer, () -> {
+            GPFlags.getScheduler().getImpl().runAtEntity(onlinePlayer, (task) -> {
                 final Location location = onlinePlayer.getLocation();
 
                 final Flag flag = this.getFlagInstanceAtLocation(location, onlinePlayer);

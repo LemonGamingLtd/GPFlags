@@ -56,6 +56,35 @@ public class FlagDef_PlayerGamemode extends PlayerMovementFlagDefinition impleme
     }
 
     @Override
+    public void onFlagSet(Claim claim, String params) {
+        if (claim == null) return;
+        for (Player player : Util.getPlayersIn(claim)) {
+            if (Util.shouldBypass(player, claim, this.getName())) continue;
+            String newGamemode = params;
+            String oldGamemode = player.getGameMode().toString();
+            if (!newGamemode.equalsIgnoreCase(oldGamemode)) {
+                changeGamemode(player, newGamemode, true);
+            }
+        }
+    }
+
+    @Override
+    public void onFlagUnset(Claim claim) {
+        if (claim == null) return;
+        WorldSettings settings = this.settingsManager.get(claim.getGreaterBoundaryCorner().getWorld());
+        String defaultGamemode = settings.worldGamemodeDefault;
+        for (Player player : Util.getPlayersIn(claim)) {
+            if (Util.shouldBypass(player, claim, this.getName())) continue;
+            changeGamemode(player, defaultGamemode, true);
+            if (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR) {
+                Block block = player.getLocation().getBlock();
+                Block fallTo = FlightManager.getFloor(block.getRelative(BlockFace.DOWN));
+                player.teleportAsync(fallTo.getRelative(BlockFace.UP).getLocation());
+            }
+        }
+    }
+
+    @Override
     public SetFlagResult validateParameters(String parameters, CommandSender sender) {
         if (parameters.isEmpty()) {
             return new SetFlagResult(false, new MessageSpecifier(Messages.PlayerGamemodeRequired));

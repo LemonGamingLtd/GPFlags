@@ -6,7 +6,7 @@
 
     <groupId>me.ryanhamshire</groupId>
     <artifactId>GPFlags</artifactId>
-    <version>5.13.8.${build.number}</version>
+    <version>5.13.8</version>
 
     <properties>
 <!--        this is the real java version used for compilation-->
@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--This is used to show the build number for jenkins.-->
         <!--suppress UnresolvedMavenProperty -->
-        <build.number>${env.BUILD_NUMBER}</build.number>
+        <build.number>0</build.number>
     </properties>
 
     <distributionManagement>
@@ -64,12 +64,12 @@
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
         <repository>
-            <id>devmart-other</id>
-            <url>https://nexuslite.gcnt.net/repos/other/</url>
-        </repository>
-        <repository>
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
+        <repository>
+            <id>nexomc-repo</id>
+            <url>https://repo.nexomc.com/releases/</url>
         </repository>
     </repositories>
     <dependencies>
@@ -140,13 +140,13 @@
         <dependency>
             <groupId>com.tcoded</groupId>
             <artifactId>FoliaLib</artifactId>
-            <version>0.2.3</version>
+            <version>0.5.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>5.0.0-SNAPSHOT</version>
+            <version>5.3.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

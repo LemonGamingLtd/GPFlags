@@ -6,6 +6,7 @@ import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.MessageSpecifier;
 import me.ryanhamshire.GPFlags.Messages;
 import me.ryanhamshire.GPFlags.SetFlagResult;
+import me.ryanhamshire.GPFlags.util.Util;
 import me.ryanhamshire.GriefPrevention.Claim;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -37,7 +38,10 @@ public class FlagDef_PlayerTime extends PlayerMovementFlagDefinition implements 
     }
 
     public void setPlayerTime(Player player, @NotNull Flag flag) {
-        String time = flag.parameters;
+        setPlayerTime(player, flag.parameters);
+    }
+
+    public void setPlayerTime(Player player, @NotNull String time) {
         if (time.equalsIgnoreCase("day")) {
             player.setPlayerTime(0, false);
         } else if (time.equalsIgnoreCase("noon")) {
@@ -46,6 +50,22 @@ public class FlagDef_PlayerTime extends PlayerMovementFlagDefinition implements 
             player.setPlayerTime(12566, false);
         } else if (time.equalsIgnoreCase("midnight")) {
             player.setPlayerTime(18000, false);
+        }
+    }
+
+    @Override
+    public void onFlagSet(Claim claim, String params) {
+        if (claim == null) return;
+        for (Player player : Util.getPlayersIn(claim)) {
+            setPlayerTime(player, params);
+        }
+    }
+
+    @Override
+    public void onFlagUnset(Claim claim) {
+        if (claim == null) return;
+        for (Player player : Util.getPlayersIn(claim)) {
+            player.resetPlayerTime();
         }
     }
 
