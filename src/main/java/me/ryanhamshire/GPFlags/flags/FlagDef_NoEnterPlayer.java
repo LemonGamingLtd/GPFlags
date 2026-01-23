@@ -19,6 +19,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.TimeUnit;
+
 public class FlagDef_NoEnterPlayer extends PlayerMovementFlagDefinition implements Runnable {
 
     private static final long TASK_PERIOD_SECONDS = 5L;
@@ -54,7 +56,13 @@ public class FlagDef_NoEnterPlayer extends PlayerMovementFlagDefinition implemen
         if (isAllowed(player, claimTo, flagTo)) return;
 
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterPlayerMessage);
-        GriefPrevention.instance.ejectPlayer(player);
+        if (from == null) {
+            GPFlags.getScheduler().getImpl().runAtEntityLater(player, () -> {
+                GriefPrevention.instance.ejectPlayer(player);
+            }, 50L, TimeUnit.MILLISECONDS);
+        } else {
+            GriefPrevention.instance.ejectPlayer(player);
+        }
     }
 
     public static boolean isAllowed(Player p, Claim c, Flag f) {

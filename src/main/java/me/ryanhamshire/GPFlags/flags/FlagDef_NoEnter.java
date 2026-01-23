@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.TimeUnit;
+
 public class FlagDef_NoEnter extends PlayerMovementFlagDefinition {
 
     public FlagDef_NoEnter(FlagManager manager, GPFlags plugin) {
@@ -48,7 +50,13 @@ public class FlagDef_NoEnter extends PlayerMovementFlagDefinition {
         if (isAllowed(flagTo, claimTo, player)) return;
 
         MessagingUtil.sendMessage(player, TextMode.Err, Messages.NoEnterMessage);
-        GriefPrevention.instance.ejectPlayer(player);
+        if (from == null) {
+            GPFlags.getScheduler().getImpl().runAtEntityLater(player, () -> {
+                GriefPrevention.instance.ejectPlayer(player);
+            }, 50L, TimeUnit.MILLISECONDS);
+        } else {
+            GriefPrevention.instance.ejectPlayer(player);
+        }
     }
 
     private boolean isAllowed(Flag flag, Claim claim, Player player) {
