@@ -156,12 +156,12 @@ public class PlayerListener implements Listener, Runnable {
     private void onLeaveBed(PlayerBedLeaveEvent event) {
         Player player = event.getPlayer();
         Location from = player.getLocation();
-        Bukkit.getScheduler().runTaskLater(GPFlags.getInstance(), () -> {
+        GPFlags.getScheduler().getImpl().runAtEntityLater(player, () -> {
             Location to = player.getLocation();
             if (flagsPreventMovement(to, from, player)) {
                 player.teleport(from.add(0, 1, 0));
             }
-        }, 1);
+        }, 50L, TimeUnit.MILLISECONDS);
     }
 
     @EventHandler
