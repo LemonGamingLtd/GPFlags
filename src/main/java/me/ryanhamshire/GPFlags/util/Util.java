@@ -289,10 +289,10 @@ public class Util {
 
         if (vehicle instanceof Boat) {
             Boat boat = (Boat) vehicle;
-            drops.add(new ItemStack(boat.getBoatMaterial()));
+            drops.add(new ItemStack(boat.getBoatType().getMaterial()));
         } else if (vehicle instanceof Minecart) {
             Minecart cart = (Minecart) vehicle;
-            drops.add(new ItemStack(cart.getMinecartMaterial()));
+            drops.add(new ItemStack(cart.getDisplayBlock().getItemType()));
         }
         if (!(vehicle instanceof InventoryHolder)) return drops;
 

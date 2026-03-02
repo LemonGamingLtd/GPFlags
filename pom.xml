@@ -161,6 +161,12 @@
             <version>3.0.2</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.7</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -219,6 +225,10 @@
                                 <relocation>
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>me.ryanhamshire.GPFlags.libs.bstats</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.papermc.lib</pattern>
+                                    <shadedPattern>me.ryanhamshire.GPFlags.libs.paperlib</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

@@ -115,8 +115,13 @@ public class GPFlagsConfig {
             this.flagManager.registerFlagDefinition(new FlagDef_EnterActionbar(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_ExitActionbar(this.flagManager, plugin));
 
-            this.flagManager.registerFlagDefinition(new FlagDef_EnterTitle(this.flagManager, plugin));
-            this.flagManager.registerFlagDefinition(new FlagDef_ExitTitle(this.flagManager, plugin));
+            try {
+                Class.forName("net.kyori.adventure.title.Title");
+                this.flagManager.registerFlagDefinition(new FlagDef_EnterTitle(this.flagManager, plugin));
+                this.flagManager.registerFlagDefinition(new FlagDef_ExitTitle(this.flagManager, plugin));
+            } catch (ClassNotFoundException ignored) {
+
+            }
 
             this.flagManager.registerFlagDefinition(new FlagDef_EnterMessage(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_ExitMessage(this.flagManager, plugin));

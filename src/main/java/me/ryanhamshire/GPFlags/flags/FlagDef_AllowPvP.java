@@ -1,17 +1,37 @@
 package me.ryanhamshire.GPFlags.flags;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
+import me.ryanhamshire.GPFlags.Flag;
+import me.ryanhamshire.GPFlags.FlagManager;
+import me.ryanhamshire.GPFlags.GPFlags;
+import me.ryanhamshire.GPFlags.MessageSpecifier;
+import me.ryanhamshire.GPFlags.Messages;
+import me.ryanhamshire.GPFlags.TextMode;
+import me.ryanhamshire.GPFlags.WorldSettings;
 import me.ryanhamshire.GPFlags.util.MessagingUtil;
-import org.bukkit.*;
+import me.ryanhamshire.GriefPrevention.Claim;
+import me.ryanhamshire.GriefPrevention.events.PreventPvPEvent;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.ThrownPotion;
+import org.bukkit.entity.Trident;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.LingeringPotionSplashEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CrossbowMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,28 +40,26 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
-
-import me.ryanhamshire.GPFlags.Flag;
-import me.ryanhamshire.GPFlags.FlagManager;
-import me.ryanhamshire.GPFlags.GPFlags;
-import me.ryanhamshire.GPFlags.MessageSpecifier;
-import me.ryanhamshire.GPFlags.Messages;
-import me.ryanhamshire.GPFlags.TextMode;
-import me.ryanhamshire.GPFlags.WorldSettings;
-
-import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.events.PreventPvPEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class FlagDef_AllowPvP extends PlayerMovementFlagDefinition {
 
     private final NamespacedKey infinity = NamespacedKey.minecraft("infinity");
     private final Enchantment infinityEnchantment = Registry.ENCHANTMENT.get(infinity);
-    
+
     // For EntityShootBow event being called multiple times when using the enchantment Multishot
     private Set<Player> justFiredCrossbow = Collections.newSetFromMap(new WeakHashMap<>());
-    
+
     public FlagDef_AllowPvP(FlagManager manager, GPFlags plugin) {
         super(manager, plugin);
         createPositiveEffects();
@@ -50,28 +68,34 @@ public class FlagDef_AllowPvP extends PlayerMovementFlagDefinition {
     private static HashSet POSITIVE_EFFECTS = new HashSet<>();
 
     public static void createPositiveEffects() {
+        POSITIVE_EFFECTS = new HashSet(Arrays.asList(
+            PotionEffectType.ABSORPTION,
+            PotionEffectType.CONDUIT_POWER,
+            PotionEffectType.DOLPHINS_GRACE,
+            PotionEffectType.FIRE_RESISTANCE,
+            PotionEffectType.HEALTH_BOOST,
+            PotionEffectType.HERO_OF_THE_VILLAGE,
+            PotionEffectType.INVISIBILITY,
+            PotionEffectType.LUCK,
+            PotionEffectType.NIGHT_VISION,
+            PotionEffectType.REGENERATION,
+            PotionEffectType.SATURATION,
+            PotionEffectType.SLOW_FALLING,
+            PotionEffectType.SPEED,
+            PotionEffectType.WATER_BREATHING));
         try {
-            POSITIVE_EFFECTS = new HashSet( Arrays.asList(
-                    PotionEffectType.ABSORPTION,
-                    PotionEffectType.CONDUIT_POWER,
-                    Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("resistance")),
-                    PotionEffectType.DOLPHINS_GRACE,
-                    Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("haste")),
-                    PotionEffectType.FIRE_RESISTANCE,
-                    Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("instant_health")),
-                    PotionEffectType.HEALTH_BOOST,
-                    PotionEffectType.HERO_OF_THE_VILLAGE,
-                    Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("strength")),
-                    PotionEffectType.INVISIBILITY,
+            POSITIVE_EFFECTS.addAll(
+                Arrays.asList(
                     Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("jump_boost")),
-                    PotionEffectType.LUCK,
-                    PotionEffectType.NIGHT_VISION,
-                    PotionEffectType.REGENERATION,
-                    PotionEffectType.SATURATION,
-                    PotionEffectType.SLOW_FALLING,
-                    PotionEffectType.SPEED,
-                    PotionEffectType.WATER_BREATHING));
-        } catch (Throwable ignored) {}
+                    Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("resistance")),
+                    Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("haste")),
+                    Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("instant_health")),
+                    Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("strength")),
+                    Registry.POTION_EFFECT_TYPE.get(NamespacedKey.minecraft("jump_boost"))
+                )
+            );
+        } catch (Throwable ignored) {
+        }
     }
 
 
@@ -248,7 +272,7 @@ public class FlagDef_AllowPvP extends PlayerMovementFlagDefinition {
         }
 
     }
-    
+
     @EventHandler
     private void onShootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {
@@ -274,9 +298,9 @@ public class FlagDef_AllowPvP extends PlayerMovementFlagDefinition {
                             () -> justFiredCrossbow.remove(player),
                             250L, TimeUnit.MILLISECONDS
                         ); // players have to fully charge their crossbow to fire more than one projectile.
-                               // We can give this time to account for lag
+                        // We can give this time to account for lag
                     }
-                    
+
                     event.getProjectile().setMetadata("item-stack", new FixedMetadataValue(GPFlags.getInstance(), projectile.clone()));
                     return;
                 }
