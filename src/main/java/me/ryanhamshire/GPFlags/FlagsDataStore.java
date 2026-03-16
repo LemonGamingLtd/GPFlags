@@ -400,6 +400,15 @@ public class FlagsDataStore {
         this.addDefault(defaults, Messages.EnabledRestoreGrazedGrass, "Grass will now immediiately regrow after being grazed by sheep.", null);
         this.addDefault(defaults, Messages.DisabledRestoreGrazedGrass, "Grass will no longer immediately regrow after being grazed by sheep.", null);
 
+        this.addDefault(defaults, Messages.EnableNoTrident, "Now blocking trident throwing in this area.", null);
+        this.addDefault(defaults, Messages.DisableNoTrident, "Stopped blocking trident throwing in this area.", null);
+        this.addDefault(defaults, Messages.NoTridentInClaim, "You cannot throw tridents in this area.", null);
+
+        this.addDefault(defaults, Messages.EnableNoSpear, "Now blocking spear usage in this area.", null);
+        this.addDefault(defaults, Messages.DisableNoSpear, "Stopped blocking spear usage in this area.", null);
+        this.addDefault(defaults, Messages.NoSpearInClaim, "You cannot throw spears in this area.", null);
+        this.addDefault(defaults, Messages.NoSpearIntoClaim, "You cannot throw spears into this claim.", null);
+
         //load the config file
         File file = new File(messagesFilePath);
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);

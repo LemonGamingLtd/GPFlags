@@ -519,6 +519,54 @@ permissions:
     default: true
     children:
       gpflags.command.gpflags: true
+  gpflags.bypass.notrident:
+    description: Makes a player immune to notrident flags
+    default: op
+  gpflags.bypass.notrident.ownclaim:
+    description: Makes a player immune to their own notrident flags
+    default: op
+  gpflags.bypass.notrident.nonclaim:
+    description: Makes a player immune to notrident outside of claims
+    default: op
+  gpflags.bypass.notrident.adminclaim:
+    description: Makes a player immune to notrident in adminclaims
+    default: op
+  gpflags.bypass.notrident.manage:
+    description: Makes a player immune to notrident where they have manage trust
+    default: op
+  gpflags.bypass.notrident.build:
+    description: Makes a player immune to notrident where they have build trust
+    default: op
+  gpflags.bypass.notrident.inventory:
+    description: Makes a player immune to notrident where they have inventory trust
+    default: op
+  gpflags.bypass.notrident.access:
+    description: Makes a player immune to notrident where they have access trust
+    default: op
+  gpflags.bypass.nospear:
+    description: Makes a player immune to nospear flags
+    default: op
+  gpflags.bypass.nospear.ownclaim:
+    description: Makes a player immune to their own nospear flags
+    default: op
+  gpflags.bypass.nospear.nonclaim:
+    description: Makes a player immune to nospear outside of claims
+    default: op
+  gpflags.bypass.nospear.adminclaim:
+    description: Makes a player immune to nospear in adminclaims
+    default: op
+  gpflags.bypass.nospear.manage:
+    description: Makes a player immune to nospear where they have manage trust
+    default: op
+  gpflags.bypass.nospear.build:
+    description: Makes a player immune to nospear where they have build trust
+    default: op
+  gpflags.bypass.nospear.inventory:
+    description: Makes a player immune to nospear where they have inventory trust
+    default: op
+  gpflags.bypass.nospear.access:
+    description: Makes a player immune to nospear where they have access trust
+    default: op
   gpflags.flag.allflags:
     description: Grants permission to apply/remove all flags. (depreciated)
     default: op

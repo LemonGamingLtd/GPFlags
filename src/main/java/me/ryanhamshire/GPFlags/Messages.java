@@ -285,5 +285,14 @@ public enum Messages {
     EnabledRestoreGrazedGrass,
     DisabledRestoreGrazedGrass,
 
+    EnableNoTrident,
+    DisableNoTrident,
+    NoTridentInClaim,
+
+    EnableNoSpear,
+    DisableNoSpear,
+    NoSpearInClaim,
+    NoSpearIntoClaim,
+
     Prefix
 }
