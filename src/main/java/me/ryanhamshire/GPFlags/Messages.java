@@ -294,5 +294,9 @@ public enum Messages {
     NoSpearInClaim,
     NoSpearIntoClaim,
 
+    EnableNoPlayerMobDamage,
+    DisableNoPlayerMobDamage,
+    NoPlayerMobDamageMessage,
+
     Prefix
 }

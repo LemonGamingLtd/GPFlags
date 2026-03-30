@@ -567,6 +567,30 @@ permissions:
   gpflags.bypass.nospear.access:
     description: Makes a player immune to nospear where they have access trust
     default: op
+  gpflags.bypass.noplayermobdamage:
+    description: Makes a player immune to noplayermobdamage flags
+    default: op
+  gpflags.bypass.noplayermobdamage.ownclaim:
+    description: Makes a player immune to their own noplayermobdamage flags
+    default: op
+  gpflags.bypass.noplayermobdamage.nonclaim:
+    description: Makes a player immune to noplayermobdamage outside of claims
+    default: op
+  gpflags.bypass.noplayermobdamage.adminclaim:
+    description: Makes a player immune to noplayermobdamage in adminclaims
+    default: op
+  gpflags.bypass.noplayermobdamage.manage:
+    description: Makes a player immune to noplayermobdamage where they have manage trust
+    default: op
+  gpflags.bypass.noplayermobdamage.build:
+    description: Makes a player immune to noplayermobdamage where they have build trust
+    default: op
+  gpflags.bypass.noplayermobdamage.inventory:
+    description: Makes a player immune to noplayermobdamage where they have inventory trust
+    default: op
+  gpflags.bypass.noplayermobdamage.access:
+    description: Makes a player immune to noplayermobdamage where they have access trust
+    default: op
   gpflags.flag.allflags:
     description: Grants permission to apply/remove all flags. (depreciated)
     default: op

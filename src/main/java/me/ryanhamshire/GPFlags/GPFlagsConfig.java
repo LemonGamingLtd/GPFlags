@@ -143,6 +143,7 @@ public class GPFlagsConfig {
             this.flagManager.registerFlagDefinition(new FlagDef_NoPlayerDamageByMonster(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_NoEnter(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_NoMobDamage(this.flagManager, plugin));
+            this.flagManager.registerFlagDefinition(new FlagDef_NoPlayerMobDamage(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_NoFluidFlow(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_HealthRegen(this.flagManager, plugin));
             this.flagManager.registerFlagDefinition(new FlagDef_NoHunger(this.flagManager, plugin));

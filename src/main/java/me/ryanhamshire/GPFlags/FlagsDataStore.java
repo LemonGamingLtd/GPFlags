@@ -409,6 +409,10 @@ public class FlagsDataStore {
         this.addDefault(defaults, Messages.NoSpearInClaim, "You cannot throw spears in this area.", null);
         this.addDefault(defaults, Messages.NoSpearIntoClaim, "You cannot throw spears into this claim.", null);
 
+        this.addDefault(defaults, Messages.EnableNoPlayerMobDamage, "Untrusted players can no longer damage mobs in this area.", null);
+        this.addDefault(defaults, Messages.DisableNoPlayerMobDamage, "Untrusted players can now damage mobs in this area.", null);
+        this.addDefault(defaults, Messages.NoPlayerMobDamageMessage, "You do not have permission to damage mobs in this area.", null);
+
         //load the config file
         File file = new File(messagesFilePath);
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
