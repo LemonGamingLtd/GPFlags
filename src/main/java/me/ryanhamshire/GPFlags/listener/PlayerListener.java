@@ -139,8 +139,9 @@ public class PlayerListener implements Listener, Runnable {
         if (!(event.getExited() instanceof Player)) return;
         Player player = (Player) event.getExited();
 
-        // manage their flight
-        FlightManager.managePlayerFlight(player, null, player.getLocation());
+        // Wait until the player has actually been placed after the exit, then compare
+        // their old and new contexts so wilderness vehicle exits don't clear unrelated fly.
+        FlightManager.manageFlightLater(player, 1, player.getLocation());
     }
 
     @EventHandler
