@@ -26,7 +26,7 @@ public class FlagDef_NoChorusFruit extends FlagDefinition {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        if (event.getCause() != TeleportCause.CHORUS_FRUIT) return;
+        if (event.getCause() != TeleportCause.CONSUMABLE_EFFECT) return;
 
         Player player = event.getPlayer();
 
