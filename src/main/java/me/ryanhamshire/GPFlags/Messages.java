@@ -234,10 +234,6 @@ public enum Messages {
     EnabledNoStructureGrowth,
     DisableNoStructureGrowth,
 
-    //EXPERIMENTAL
-    ChangeBiomeSet,
-    ChangeBiomeUnset,
-
     NoFlagInClaim,
     NoFlagInWorld,
     NoFlagInServer,
@@ -281,6 +277,8 @@ public enum Messages {
 
     EnabledAllowVillagerTrading,
     DisabledAllowVillagerTrading,
+    EnabledAllowItemFrameContents,
+    DisabledAllowItemFrameContents,
 
     EnabledRestoreGrazedGrass,
     DisabledRestoreGrazedGrass,

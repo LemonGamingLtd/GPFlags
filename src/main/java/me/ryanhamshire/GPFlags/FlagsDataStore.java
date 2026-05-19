@@ -281,9 +281,6 @@ public class FlagsDataStore {
 
         this.addDefault(defaults, Messages.NoOwnerFlag, "You cannot set both OwnerFly and OwnerMemberFly flags in one claim.", null);
 
-        this.addDefault(defaults, Messages.ChangeBiomeSet, "The biome in this claim has been set to {0}. Relog to see the changes.", "0: Biome");
-        this.addDefault(defaults, Messages.ChangeBiomeUnset, "You've unset the ChangeBiome flag.", null);
-
         this.addDefault(defaults, Messages.NoFlagInClaim, "This flag cannot be set in a claim.", null);
         this.addDefault(defaults, Messages.NoFlagInWorld, "This flag cannot be set for a whole world.", null);
         this.addDefault(defaults, Messages.NoFlagInServer, "This flag cannot be set for the whole server.", null);
@@ -396,6 +393,8 @@ public class FlagsDataStore {
 
         this.addDefault(defaults, Messages.EnabledAllowVillagerTrading, "Players can now trade with villagers in this claim.", null);
         this.addDefault(defaults, Messages.DisabledAllowVillagerTrading, "Players can no longer trade with villagers in this claim.", null);
+        this.addDefault(defaults, Messages.EnabledAllowItemFrameContents, "Players with container trust can now manage item frame contents in this claim.", null);
+        this.addDefault(defaults, Messages.DisabledAllowItemFrameContents, "Players with container trust can no longer manage item frame contents in this claim.", null);
 
         this.addDefault(defaults, Messages.EnabledRestoreGrazedGrass, "Grass will now immediiately regrow after being grazed by sheep.", null);
         this.addDefault(defaults, Messages.DisabledRestoreGrazedGrass, "Grass will no longer immediately regrow after being grazed by sheep.", null);
