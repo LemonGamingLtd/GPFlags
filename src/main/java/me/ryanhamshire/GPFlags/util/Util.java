@@ -301,7 +301,7 @@ public class Util {
         World world = vehicle.getWorld();
         vehicle.eject();
         if (vehicle instanceof Mob) {
-            vehicle.teleport(location);
+            vehicle.teleportAsync(location);
         } else {
             vehicle.remove();
             ArrayList<ItemStack> drops = getDrops(vehicle);

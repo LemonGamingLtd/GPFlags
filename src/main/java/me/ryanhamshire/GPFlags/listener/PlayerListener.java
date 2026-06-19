@@ -161,7 +161,7 @@ public class PlayerListener implements Listener, Runnable {
         GPFlags.getScheduler().getImpl().runAtEntityLater(player, () -> {
             Location to = player.getLocation();
             if (flagsPreventMovement(to, from, player)) {
-                player.teleport(from.add(0, 1, 0));
+                PaperLib.teleportAsync(player, from.clone().add(0, 1, 0));
             }
         }, 50L, TimeUnit.MILLISECONDS);
     }
