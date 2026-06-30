@@ -1,6 +1,5 @@
 package me.ryanhamshire.GPFlags.listener;
 
-import io.papermc.lib.PaperLib;
 import me.ryanhamshire.GPFlags.FlightManager;
 import me.ryanhamshire.GPFlags.GPFlags;
 import me.ryanhamshire.GPFlags.event.PlayerPostClaimBorderEvent;
@@ -70,7 +69,7 @@ public class PlayerListener implements Listener, Runnable {
                 if (!flagsPreventMovement(location, lastLocation, group)) {
                     return;
                 }
-                PaperLib.teleportAsync(player, lastLocation);
+                player.teleportAsync(lastLocation);
             });
         }
     }
@@ -161,7 +160,7 @@ public class PlayerListener implements Listener, Runnable {
         GPFlags.getScheduler().getImpl().runAtEntityLater(player, () -> {
             Location to = player.getLocation();
             if (flagsPreventMovement(to, from, player)) {
-                PaperLib.teleportAsync(player, from.clone().add(0, 1, 0));
+                player.teleportAsync(from.clone().add(0, 1, 0));
             }
         }, 50L, TimeUnit.MILLISECONDS);
     }
