@@ -105,8 +105,13 @@ public class FlagManager {
                             arg = offlinePlayer.getUniqueId().toString();
                         }
                     } catch (NoSuchMethodError ignored) {
-                        offlinePlayer = Bukkit.getOfflinePlayer(arg);
-                        arg = offlinePlayer.getUniqueId().toString();
+                        // Spigot-based servers (e.g. Arclight) lack getOfflinePlayerIfCached, and there getOfflinePlayer(name)
+                        // makes up an offline-mode UUID for anyone not online, which never matches them.
+                        // Use GP's known players instead, and keep the name if unknown since names are matched too.
+                        offlinePlayer = GriefPrevention.instance.resolvePlayerByName(arg);
+                        if (offlinePlayer != null) {
+                            arg = offlinePlayer.getUniqueId().toString();
+                        }
                     }
 
                 }
