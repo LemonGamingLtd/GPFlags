@@ -370,6 +370,8 @@ public class FlagsDataStore {
         this.addDefault(defaults, Messages.DisabledAllowWitherDamage, "Withers can no longer deal damage to mobs in this region", null);
         this.addDefault(defaults, Messages.EnableNoEliteMobSpawns, "Now preventing elite mob spawns in this region.", null);
         this.addDefault(defaults, Messages.DisableNoEliteMobSpawns, "No longer preventing elite mob spawns in this region.", null);
+        this.addDefault(defaults, Messages.EnableNoPokemonSpawns, "Now preventing wild Pokémon spawns in this region.", null);
+        this.addDefault(defaults, Messages.DisableNoPokemonSpawns, "No longer preventing wild Pokémon spawns in this region.", null);
 
         this.addDefault(defaults, Messages.EnabledAllowInfest, "Silverfish can now infest blocks in this area.", null);
         this.addDefault(defaults, Messages.DisabledAllowInfest, "Silverfish can no longer infest blocks in this area.", null);

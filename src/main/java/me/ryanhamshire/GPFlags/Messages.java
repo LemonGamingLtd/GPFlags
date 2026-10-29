@@ -228,6 +228,8 @@ public enum Messages {
     DisabledAllowWitherDamage,
     EnableNoEliteMobSpawns,
     DisableNoEliteMobSpawns,
+    EnableNoPokemonSpawns,
+    DisableNoPokemonSpawns,
     EnableNoCropTrampling,
     DisableNoCropTrampling,
 

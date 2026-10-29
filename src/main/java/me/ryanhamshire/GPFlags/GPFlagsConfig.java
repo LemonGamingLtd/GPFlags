@@ -247,6 +247,12 @@ public class GPFlagsConfig {
                 }
             } catch (NoClassDefFoundError ignored) {}
 
+            // Cobblemon flags (Cobblemon is a mod, so check for its classes rather than a plugin)
+            try {
+                Class.forName("com.cobblemon.mod.common.Cobblemon");
+                this.flagManager.registerFlagDefinition(new FlagDef_NoPokemonSpawns(this.flagManager, plugin));
+            } catch (ClassNotFoundException ignored) {}
+
             // vault-reliant flags
             try {
                 if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
