@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -50,28 +51,32 @@ public class PlayerListener implements Listener, Runnable {
         GPFlags.getScheduler().getImpl().runTimer(this, TASK_PERIOD_MILLISECONDS, TASK_PERIOD_MILLISECONDS, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Catches teleports that fire no PlayerTeleportEvent (Folia's teleportAsync, which most plugins use there).
+     * The move and teleport handlers keep {@link #lastLocation} current, so only jumps they never saw end up here.
+     */
     @Override
     public void run() {
         for (final Player player : Bukkit.getOnlinePlayers()) {
             final UUID playerId = player.getUniqueId();
             final Location location = player.getLocation();
-            final Location lastLocation = this.lastLocation.get(playerId);
-            this.lastLocation.put(playerId, location);
-            if (lastLocation == null) {
-                return;
-            }
-            if (location.getWorld().equals(lastLocation.getWorld()) &&
-                location.distanceSquared(lastLocation) <= DISTANCE_THRESHOLD_SQUARED) {
-                return;
+            final Location lastLocation = this.lastLocation.put(playerId, location);
+            if (lastLocation == null || !isJump(lastLocation, location)) {
+                continue;
             }
             GPFlags.getScheduler().getImpl().runAtEntity(player, (task) -> {
                 Set<Player> group = Util.getMovementGroup(player);
                 if (!flagsPreventMovement(location, lastLocation, group)) {
                     return;
                 }
+                this.lastLocation.put(playerId, lastLocation);
                 player.teleportAsync(lastLocation);
             });
         }
+    }
+
+    private static boolean isJump(Location from, Location to) {
+        return !to.getWorld().equals(from.getWorld()) || to.distanceSquared(from) > DISTANCE_THRESHOLD_SQUARED;
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -81,6 +86,16 @@ public class PlayerListener implements Listener, Runnable {
         Player player = event.getPlayer();
 
         Set<Player> group = Util.getMovementGroup(player);
+
+        // The first move after an event-less teleport starts somewhere we never saw, so check that jump first
+        Location lastLocation = this.lastLocation.put(player.getUniqueId(), locTo);
+        if (lastLocation != null && isJump(lastLocation, locFrom) && flagsPreventMovement(locFrom, lastLocation, group)) {
+            event.setCancelled(true);
+            this.lastLocation.put(player.getUniqueId(), lastLocation);
+            player.teleportAsync(lastLocation);
+            return;
+        }
+
         if (flagsPreventMovement(locTo, locFrom, group)) {
             event.setCancelled(true);
             if (player.isGliding()) {
@@ -103,6 +118,16 @@ public class PlayerListener implements Listener, Runnable {
         if (flagsPreventMovement(locTo, locFrom, group)) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    private void onTeleportComplete(PlayerTeleportEvent event) {
+        lastLocation.put(event.getPlayer().getUniqueId(), event.getTo());
+    }
+
+    @EventHandler
+    private void onQuit(PlayerQuitEvent event) {
+        lastLocation.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -189,6 +214,7 @@ public class PlayerListener implements Listener, Runnable {
     private void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         Location spawn = event.getRespawnLocation();
+        lastLocation.put(player.getUniqueId(), spawn);
         Claim cachedClaim = dataStore.getPlayerData(player.getUniqueId()).lastClaim;
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(spawn,false, cachedClaim);
         PlayerPostClaimBorderEvent borderEvent = new PlayerPostClaimBorderEvent(event.getPlayer(), null, claim, null, spawn);
