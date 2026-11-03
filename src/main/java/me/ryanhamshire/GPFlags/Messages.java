@@ -151,6 +151,7 @@ public enum Messages {
     PermissionFlightDisabled,
     EnabledNoEnterPlayer,
     DisabledNoEnterPlayer,
+    NoEnterPlayerNotBlocked,
     NoEnterPlayerMessage,
     PlayerRequired,
     PlayerWeatherRequired,

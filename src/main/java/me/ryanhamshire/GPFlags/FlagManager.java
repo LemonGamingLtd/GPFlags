@@ -94,28 +94,16 @@ public class FlagManager {
     public SetFlagResult setFlag(String claimId, FlagDefinition def, boolean isActive, CommandSender sender, String... args) {
         StringBuilder internalParameters = new StringBuilder();
         StringBuilder friendlyParameters = new StringBuilder();
+        Set<String> blockedPlayers = new HashSet<>();
         for (String arg : args) {
-            friendlyParameters.append(arg).append(" ");
-            if (def.getName().equals("NoEnterPlayer") && !arg.isEmpty()) {
-                if (arg.length() <= 30) {
-                    OfflinePlayer offlinePlayer;
-                    try {
-                        offlinePlayer = Bukkit.getOfflinePlayerIfCached(arg);
-                        if (offlinePlayer != null) {
-                            arg = offlinePlayer.getUniqueId().toString();
-                        }
-                    } catch (NoSuchMethodError ignored) {
-                        // Spigot-based servers (e.g. Arclight) lack getOfflinePlayerIfCached, and there getOfflinePlayer(name)
-                        // makes up an offline-mode UUID for anyone not online, which never matches them.
-                        // Use GP's known players instead, and keep the name if unknown since names are matched too.
-                        offlinePlayer = GriefPrevention.instance.resolvePlayerByName(arg);
-                        if (offlinePlayer != null) {
-                            arg = offlinePlayer.getUniqueId().toString();
-                        }
-                    }
-
-                }
+            String friendlyArg = arg;
+            if (def.getName().equals("NoEnterPlayer")) {
+                if (arg.isEmpty()) continue;
+                arg = resolvePlayerParameter(arg);
+                // Skip players listed twice, e.g. once by UUID and again by name
+                if (!blockedPlayers.add(arg.toLowerCase())) continue;
             }
+            friendlyParameters.append(friendlyArg).append(" ");
             internalParameters.append(arg).append(" ");
         }
         internalParameters = new StringBuilder(internalParameters.toString().trim());
@@ -169,6 +157,26 @@ public class FlagManager {
             }
         }
         return result;
+    }
+
+    /**
+     * Turn a NoEnterPlayer name into that player's UUID if they're known; anything else comes back unchanged
+     *
+     * @param arg Player name or UUID
+     * @return UUID string, or the argument as given
+     */
+    public static String resolvePlayerParameter(String arg) {
+        if (arg.length() > 30) return arg;
+        OfflinePlayer offlinePlayer;
+        try {
+            offlinePlayer = Bukkit.getOfflinePlayerIfCached(arg);
+        } catch (NoSuchMethodError ignored) {
+            // Spigot-based servers (e.g. Arclight) lack getOfflinePlayerIfCached, and there getOfflinePlayer(name)
+            // makes up an offline-mode UUID for anyone not online, which never matches them.
+            // Use GP's known players instead, and keep the name if unknown since names are matched too.
+            offlinePlayer = GriefPrevention.instance.resolvePlayerByName(arg);
+        }
+        return offlinePlayer != null ? offlinePlayer.getUniqueId().toString() : arg;
     }
 
     /**

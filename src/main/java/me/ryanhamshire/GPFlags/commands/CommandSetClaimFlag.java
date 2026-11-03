@@ -109,8 +109,25 @@ public class CommandSetClaimFlag implements TabExecutor {
             return true;
         }
 
+        // NoEnterPlayer adds to the players already blocked here instead of replacing them
+        boolean addingPlayers = def.getName().equals("NoEnterPlayer") && params.length > 0;
+        if (addingPlayers) {
+            Flag existing = gpflags.getFlagManager().getRawClaimFlag(claim, "noenterplayer");
+            if (existing != null && existing.getSet()) {
+                String[] blocked = existing.getParametersArray();
+                String[] merged = Arrays.copyOf(blocked, blocked.length + params.length);
+                System.arraycopy(params, 0, merged, blocked.length, params.length);
+                params = merged;
+            }
+        }
+
         // Change the flag in the file storage
         SetFlagResult result = gpflags.getFlagManager().setFlag(claimID.toString(), def, true, commandSender, params);
+        if (addingPlayers && result.isSuccess()) {
+            // List everyone blocked now, by name, not just who was added
+            Flag flag = gpflags.getFlagManager().getRawClaimFlag(claim, "noenterplayer");
+            result = new SetFlagResult(true, def.getSetMessage(flag.getFriendlyParameters()));
+        }
         String color = result.isSuccess() ? TextMode.Success : TextMode.Err;
         MessagingUtil.sendMessage(player, color, result.getMessage().getMessageID(), result.getMessage().getMessageParams());
         if (result.isSuccess()) gpflags.getFlagManager().save();

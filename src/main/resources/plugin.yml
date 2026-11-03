@@ -30,7 +30,7 @@ commands:
     permission: gpflags.command.setclaimflagplayer
   unsetclaimflag:
     description: Un-sets (removes) a flag on a GriefPrevention land claim.
-    usage: /UnSetClaimFlag <flag>
+    usage: /UnSetClaimFlag <flag> [players to unblock, for NoEnterPlayer]
     aliases: [ unsetflag, removeflag, unclaimflag, removeclaimflag ]
     permission: gpflags.command.unsetclaimflag
   unsetclaimflagplayer:
